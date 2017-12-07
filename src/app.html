@@ -1,3 +1,7 @@
 <template>
-  <h1>${message}</h1>
+  <button click.delegate="auth.login()">login</button>
+
+  <div class="page-host container">
+    <router-view></router-view>
+  </div>
 </template>
