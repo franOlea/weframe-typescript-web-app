@@ -5,12 +5,12 @@ import { EventAggregator } from 'aurelia-event-aggregator';
 
 @inject(Router, EventAggregator)
 export class AuthService {
+
   private router: Router;
   private eventAggregator: EventAggregator;
   private auth0: WebAuth;
 
   constructor(router: Router, eventAggregator: EventAggregator) {
-    console.log("auth-service created");
     this.router = router;
     this.eventAggregator = eventAggregator;
     this.auth0 = new WebAuth({
@@ -29,13 +29,9 @@ export class AuthService {
 
   handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
-      console.log(authResult);
-      console.log(err);
       if (authResult && authResult.accessToken && authResult.idToken) {
-        console.log("Handling auth...");
         this.setSession(authResult);
         this.router.navigate('home');
-        this.eventAggregator.publish('authChange', { authenticated: true });
       } else if (err) {
         console.log(err);
       }
@@ -47,11 +43,13 @@ export class AuthService {
     let expiresAt = JSON.stringify(
       authResult.expiresIn * 1000 + new Date().getTime()
     );
-    console.log(authResult);
-    console.log(expiresAt);
     localStorage.setItem('access_token', authResult.accessToken);
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
+    this.eventAggregator.publish('authChange', { 
+      authenticated: true, 
+      accessToken: authResult.access_token 
+    });
   }
 
   logout() {
