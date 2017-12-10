@@ -1,4 +1,5 @@
 <template>
-  <button if.bind="!authenticated" class="btn btn-primary" click.delegate="auth.login()">Log In</button>
-  <button if.bind="authenticated" class="btn btn-secondary" click.delegate="auth.logout()">Log Out</button>
+  <h1>Home</h1>
+  <button if.bind="!authenticated" class="btn btn-primary" click.delegate="auth.login()">Ingresar</button>
+  <button if.bind="authenticated" class="btn btn-secondary" click.delegate="auth.logout()">Salir</button>
 </template>

@@ -1,24 +1,29 @@
 import { HttpClient } from 'aurelia-http-client';
 import { inject } from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
-import environment from './environment';
+import { AuthService } from './auth-service';
+import environment from '../environment';
 
-@inject(EventAggregator)
+@inject(EventAggregator, AuthService)
 export class RestService {
     
     private httpClient: HttpClient;
-    private eventAggregator: EventAggregator;
 
-    constructor(eventAggregator) {
-        this.httpClient = this.createUnauthenticatedClient();
-		this.eventAggregator = eventAggregator;
-        this.eventAggregator.subscribe(environment.authChangeEvent, authChange => {
+    constructor(eventAggregator: EventAggregator, authService: AuthService) {
+        eventAggregator.subscribe(environment.authChangeEvent, authChange => {
 			if(authChange.authenticated) {
                 this.httpClient = this.createAuthenticatedClient(authChange.accessToken);
+                console.log("Authenticated, created http client with access token.");
             } else {
                 this.httpClient = this.createUnauthenticatedClient();
+                console.log("Logged out, created default http client.");
             }
-		});
+        });
+        if(authService.isAuthenticated()) {
+            this.httpClient = this.createAuthenticatedClient(authService.getToken().accessToken);
+        } else {
+            this.httpClient = this.createUnauthenticatedClient();
+        }
     }
 
     private createUnauthenticatedClient(): HttpClient {
@@ -32,7 +37,7 @@ export class RestService {
         return new HttpClient()
             .configure(configuration => {
             configuration.withBaseUrl(environment.webApiUrl);
-            configuration.withHeader('Authorization', 'Bearer ' + accessToken);
+            configuration.withHeader('Authorization', `Bearer ${accessToken}`);
         });
     }
 

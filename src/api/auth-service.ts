@@ -2,6 +2,7 @@ import { WebAuth } from 'auth0-js';
 import { inject } from 'aurelia-framework';
 import { Router } from 'aurelia-router';
 import { EventAggregator } from 'aurelia-event-aggregator';
+import environment from '../environment'
 
 @inject(Router, EventAggregator)
 export class AuthService {
@@ -31,6 +32,11 @@ export class AuthService {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
+        console.log("Login successful for user " + authResult.idTokenPayload.sub);
+        this.eventAggregator.publish(environment.authChangeEvent, { 
+          authenticated: true, 
+          accessToken: authResult.access_token 
+        });
         this.router.navigate('home');
       } else if (err) {
         console.log(err);
@@ -46,10 +52,6 @@ export class AuthService {
     localStorage.setItem('access_token', authResult.accessToken);
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
-    this.eventAggregator.publish('authChange', { 
-      authenticated: true, 
-      accessToken: authResult.access_token 
-    });
   }
 
   logout() {
@@ -57,8 +59,9 @@ export class AuthService {
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    console.log("Tokens removed.");
     this.router.navigate('home');
-    this.eventAggregator.publish('authChange', false);
+    this.eventAggregator.publish(environment.authChangeEvent, false);
   }
 
   isAuthenticated() {
@@ -66,5 +69,16 @@ export class AuthService {
     // access token's expiry time
     let expiresAt = JSON.parse(localStorage.getItem('expires_at'));
     return new Date().getTime() < expiresAt;
+  }
+
+  getToken() {
+    if(this.isAuthenticated()) {
+      return {
+        accessToken: localStorage.getItem('access_token'), 
+        idToken: localStorage.getItem('id_token')
+      };
+    } else {
+      return null;
+    }
   }
 }

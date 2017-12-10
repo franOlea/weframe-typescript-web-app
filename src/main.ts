@@ -1,6 +1,9 @@
 import {Aurelia} from 'aurelia-framework'
 import environment from './environment';
 
+import { RestService } from './api/rest-service';
+import { ApiDeleteAbleService } from './api/api-delete-able-service';
+
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
