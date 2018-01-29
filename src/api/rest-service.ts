@@ -29,15 +29,16 @@ export class RestService {
     private createUnauthenticatedClient(): HttpClient {
         return new HttpClient()
             .configure(configuration => {
-            configuration.withBaseUrl(environment.webApiUrl);
+                configuration.withBaseUrl(environment.webApiUrl);
         });
     }
 
     private createAuthenticatedClient(accessToken): HttpClient {
         return new HttpClient()
             .configure(configuration => {
-            configuration.withBaseUrl(environment.webApiUrl);
-            configuration.withHeader('Authorization', `Bearer ${accessToken}`);
+                configuration.withBaseUrl(environment.webApiUrl);
+                configuration.withCredentials(true)
+                configuration.withHeader('Authorization', `Bearer ${accessToken}`);
         });
     }
 
