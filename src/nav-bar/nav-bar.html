@@ -17,8 +17,11 @@
 				<a class="nav-link disabled" href="#">Disabled</a>
 			</li>
 			</ul>
-			<button class="btn btn-outline-success my-2 my-sm-0" if.bind="!authenticated" click.delegate="auth.login()">Ingresar</button>
-			<button class="btn btn-outline-warning my-2 my-sm-0" if.bind="authenticated" click.delegate="auth.logout()">Salir</button>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#" if.bind="authenticated">${user}</a></li>
+				<button class="btn btn-outline-success my-2 my-sm-0" if.bind="!authenticated" click.delegate="authService.login()">Ingresar</button>
+				<button class="btn btn-outline-warning my-2 my-sm-0" if.bind="authenticated" click.delegate="authService.logout()">Salir</button>
+			</ul>
 		</div>
 	</nav>
 </template>
