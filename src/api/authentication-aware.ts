@@ -6,7 +6,7 @@ export abstract class AuthenticationAware {
     protected authenticated: boolean;
 
     constructor(eventAggregator: EventAggregator) {
-        eventAggregator.subscribe(environment.authChangeEvent, (authChange) => {
+        eventAggregator.subscribe(environment.tokenStateEvent, (authChange) => {
             this.authenticated = authChange.authenticated;
             this.authenticationChanged(authChange);
         });
