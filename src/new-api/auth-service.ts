@@ -7,13 +7,10 @@ import environment from '../environment'
 @inject(Router, EventAggregator)
 export class AuthService {
 
-  private router: Router;
-  private eventAggregator: EventAggregator;
-  private auth0: WebAuth;
+  private readonly auth0: WebAuth;
 
-  constructor(router: Router, eventAggregator: EventAggregator) {
-    this.router = router;
-    this.eventAggregator = eventAggregator;
+  constructor(private readonly router: Router, 
+              private readonly eventAggregator: EventAggregator) {
     this.initialize();
     this.auth0 = new WebAuth({
       domain: 'weframe.auth0.com',
