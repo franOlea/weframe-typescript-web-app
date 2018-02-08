@@ -2,7 +2,7 @@ import { ApiService } from './api-service';
 import { HttpService } from './http-service';
 import environment from '../environment';
 
-export class DeleteAbleApiService extends ApiService {
+export abstract class DeleteAbleApiService extends ApiService {
 
   constructor(httpService: HttpService, entityPath: string, timeout: number) {
     super(httpService, entityPath, timeout);
@@ -16,6 +16,7 @@ export class DeleteAbleApiService extends ApiService {
         .withTimeout(this.timeout)
         .send()
         .then(success => {
+          console.log(`${this.entityPath} response status ${success.statusCode}`);
           if(success.statusCode == 200) {
             resolve();
           } else {

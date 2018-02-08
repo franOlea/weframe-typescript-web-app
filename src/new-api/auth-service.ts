@@ -52,9 +52,9 @@ export class AuthService {
 
   publishSessionState() {
     if (this.hasExpiredToken()) {
-      this.publishToken(this.loadToken().accessToken);
-    } else {
       this.publishUnauthenticated();
+    } else {
+      this.publishToken(this.loadToken().accessToken);
     }
   }
 
@@ -94,12 +94,12 @@ export class AuthService {
 
   private loadToken() {
     if (this.hasExpiredToken()) {
+      return null;
+    } else {
       return {
         accessToken: localStorage.getItem('access_token'),
         idToken: localStorage.getItem('id_token')
       };
-    } else {
-      return null;
     }
   }
 
@@ -107,7 +107,7 @@ export class AuthService {
     // Check whether the current time is past the
     // access token's expiry time
     let expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return new Date().getTime() < expiresAt;
+    return new Date().getTime() > expiresAt;
   }
 
 }

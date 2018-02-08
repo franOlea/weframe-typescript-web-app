@@ -1,8 +1,7 @@
-import { inject } from 'aurelia-framework';
 import { HttpService } from './http-service';
 import environment from '../environment';
 
-export class ApiService {
+export abstract class ApiService {
 
   constructor(protected readonly httpService: HttpService, 
               protected readonly entityPath: string, 
