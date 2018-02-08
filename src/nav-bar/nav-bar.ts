@@ -1,26 +1,25 @@
 import { inject } from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { AuthService } from '../api/auth-service';
-import { AuthenticationAware } from '../api/authentication-aware';
-import { UserService } from '../api/user/user-service';
+import { UserService } from '../new-api/user-service';
+import { AuthAware } from '../new-api/auth-aware';
+import { AuthService } from '../new-api/auth-service';
 
-@inject(EventAggregator, AuthService, UserService)
-export class NavBar extends AuthenticationAware {
+@inject(EventAggregator, UserService)
+export class NavBar extends AuthAware {
 
-  private authService: AuthService;
-  private userService: UserService;
   private user;
 
-  constructor(eventAggregator: EventAggregator, authService: AuthService, userService: UserService) {
+  constructor(eventAggregator: EventAggregator, 
+              private readonly authService: AuthService, 
+              private readonly userService: UserService) {
     super(eventAggregator)
-    this.authService = authService;
-    this.userService = userService;
   }
-
-  protected authenticationChanged() {
-    if(this.authenticated) {
-      this.getCurrentUser();
-    }
+  
+  protected onAuthenticaticated(): void {
+    this.getCurrentUser();
+  }
+  protected onUnauthenticated(): void {
+    this.user = null;
   }
 
   getCurrentUser() {

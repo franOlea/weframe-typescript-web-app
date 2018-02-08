@@ -5,10 +5,15 @@ export abstract class AuthAware {
 
     constructor(eventAggregator: EventAggregator) {
         eventAggregator.subscribe(environment.authStateEvent, (authenticated) => {
-            this.onAuthenticationChanged(authenticated);
+            if(authenticated) {
+                this.onAuthenticaticated();
+            } else {
+                this.onUnauthenticated();
+            }
         });
     }
 
-    protected abstract onAuthenticationChanged(authenticated): void;
+    protected abstract onAuthenticaticated(): void;
+    protected abstract onUnauthenticated(): void;
 
 }
