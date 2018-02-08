@@ -5,7 +5,7 @@ import { AuthService } from './auth-service';
 import environment from '../environment';
 
 @inject(EventAggregator, AuthService)
-export class RestService {
+export class HttpService {
 
   private httpClient: HttpClient;
 

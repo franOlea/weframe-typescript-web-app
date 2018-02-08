@@ -1,17 +1,17 @@
 import { inject } from 'aurelia-framework';
-import { RestService } from './rest-service';
+import { HttpService } from './http-service';
 import environment from '../environment';
 
 export class ApiService {
 
-  constructor(protected readonly restService: RestService, 
+  constructor(protected readonly httpService: HttpService, 
               protected readonly entityPath: string, 
               protected readonly timeout: number) {}
 
   get(page: number, size: number) {
     console.log(`Retrieving ${size} entities from ${this.entityPath} page ${page}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.request(this.entityPath)
+      this.httpService.request(this.entityPath)
         .asGet()
         .withTimeout(this.timeout)
         .withParams({ page: page, size: size })
@@ -27,7 +27,7 @@ export class ApiService {
   getById(id: number) {
     console.log(`Retrieving from ${this.entityPath} by id ${id}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.request(`${this.entityPath}/${id}`)
+      this.httpService.request(`${this.entityPath}/${id}`)
         .asGet()
         .withTimeout(this.timeout)
         .send()
@@ -43,7 +43,7 @@ export class ApiService {
     console.log(`Getting ${this.entityPath} count`);
     var _self = this;
     var promise = new Promise(function (resolve, reject) {
-      _self.restService.request(`${this.entityPath}/count`)
+      _self.httpService.request(`${this.entityPath}/count`)
         .asGet()
         .withTimeout(this.timeout)
         .send()
@@ -58,7 +58,7 @@ export class ApiService {
   post(user) {
     console.log(`Posting to ${this.entityPath}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.request(`${this.entityPath}`)
+      this.httpService.request(`${this.entityPath}`)
         .asPost()
         .withTimeout(this.timeout)
         .withContent(user)

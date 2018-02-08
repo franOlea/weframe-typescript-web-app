@@ -1,17 +1,17 @@
 import { ApiService } from './api-service';
-import { RestService } from './rest-service';
+import { HttpService } from './http-service';
 import environment from '../environment';
 
 export class DeleteAbleApiService extends ApiService {
 
-  constructor(restService: RestService, entityPath: string, timeout: number) {
-    super(restService, entityPath, timeout);
+  constructor(httpService: HttpService, entityPath: string, timeout: number) {
+    super(httpService, entityPath, timeout);
   }
 
   delete(id: number) {
     console.log(`Deleting from ${this.entityPath} by id ${id}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.request(`${this.entityPath}/${id}`)
+      this.httpService.request(`${this.entityPath}/${id}`)
         .asDelete()
         .withTimeout(this.timeout)
         .send()
