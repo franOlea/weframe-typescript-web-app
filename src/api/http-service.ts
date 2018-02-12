@@ -7,6 +7,7 @@ import environment from '../environment';
 @inject(EventAggregator, AuthService)
 export class HttpService {
 
+  private authenticated: boolean;
   private httpClient: HttpClient;
 
   constructor(eventAggregator: EventAggregator, authService: AuthService) {
@@ -21,31 +22,30 @@ export class HttpService {
   private initialize(eventAggregator: EventAggregator, authService: AuthService) {
     this.subscribeToTokenStateEvent(eventAggregator);
     authService.publishSessionState();
+    this.subscribeToNewListeners(eventAggregator);
   }
 
   private subscribeToTokenStateEvent(eventAggregator: EventAggregator) {
-    eventAggregator.subscribe(environment.tokenStateEvent, (authChange) => {
-        if(authChange.authenticated) {
-          this.httpClient = this.createAuthenticatedClient(authChange.accessToken);
-          this.publishAuthenticated(eventAggregator);
-          console.log("Authenticated, created http client with access token.");
-        } else {
-          this.httpClient = this.createUnauthenticatedClient();
-          this.publishUnauthenticated(eventAggregator);
-          console.log("Logged out, created default http client.");
-        }
+    eventAggregator.subscribe(environment.tokenStateEvent, (event) => {
+      this.authenticated = event.authenticated;
+      if(this.authenticated) {
+        this.httpClient = this.createAuthenticatedClient(event.accessToken);
+      } else {
+        this.httpClient = this.createUnauthenticatedClient();
+      }
+      eventAggregator.publish(environment.authStateEvent, {
+        authenticated: this.authenticated
+      });
     });
   }
 
-  private publishAuthenticated(eventAggregator: EventAggregator) {
-    eventAggregator.publish(environment.authStateEvent, {
-      authenticated: true
-    });
-  }
-
-  private publishUnauthenticated(eventAggregator: EventAggregator) {
-    eventAggregator.publish(environment.authStateEvent, {
-      authenticated: false
+  private subscribeToNewListeners(eventAggregator: EventAggregator) {
+    var isAuthenticated = this.authenticated;
+    eventAggregator.subscribe(environment.newAuthStateEvent, (event) => {
+      console.log("Received new auth state listener, publishing state to: " + event.listenerId);
+      eventAggregator.publish(event.listenerId, {
+        authenticated: isAuthenticated
+      });
     });
   }
 

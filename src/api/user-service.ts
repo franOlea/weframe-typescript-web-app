@@ -12,7 +12,11 @@ export class UserService {
                 .asGet()
                 .send()
                 .then(success => {
-                    resolve(success);
+                    if(success.statusCode == 200) {
+                        resolve(JSON.parse(success.response));
+                    } else {
+                        reject(success);
+                    }
                 }, failure => {
                     reject(failure);
                 });

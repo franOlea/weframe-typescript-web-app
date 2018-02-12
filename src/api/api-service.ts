@@ -1,30 +1,22 @@
-import { inject } from 'aurelia-framework';
-import { RestService } from './rest-service';
+import { HttpService } from './http-service';
 import environment from '../environment';
 
-export class ApiService {
+export abstract class ApiService {
 
-  protected restService: RestService;
-  protected entityPath: string;
-  protected timeout: number;
+  constructor(protected readonly httpService: HttpService, 
+              protected readonly entityPath: string, 
+              protected readonly timeout: number) {}
 
-  constructor(restService: RestService, entityPath: string, timeout: number) {
-    this.restService = restService;
-    this.entityPath = entityPath;
-    this.timeout = timeout;
-  }
-
-  get(page: number, size: number) {
-    console.log(`Retrieving ${size} entities from ${this.entityPath} page`);
+  get(page: number = 0, size: number = 10) {
+    console.log(`Retrieving ${size} entities from ${this.entityPath} page ${page}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.getClient()
-        .createRequest(this.entityPath)
+      this.httpService.request(this.entityPath)
         .asGet()
         .withTimeout(this.timeout)
         .withParams({ page: page, size: size })
         .send()
-        .then(this.promiseSuccess, failure => {
-          this.promiseFailure(failure);
+        .then(this.getSuccess, failure => {
+          this.getFailure(failure);
           reject(failure);
         });
     });
@@ -34,45 +26,28 @@ export class ApiService {
   getById(id: number) {
     console.log(`Retrieving from ${this.entityPath} by id ${id}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.getClient()
-        .createRequest(`${this.entityPath}/${id}`)
+      this.httpService.request(`${this.entityPath}/${id}`)
         .asGet()
         .withTimeout(this.timeout)
         .send()
-        .then(this.promiseSuccess, failure => {
-          this.promiseFailure(failure);
+        .then(this.getSuccess, failure => {
+          this.getFailure(failure);
           reject(failure);
         });
 
     })
   }
 
-  getCount() {
-    console.log(`Getting ${this.entityPath} count`);
-    var _self = this;
-    var promise = new Promise(function (resolve, reject) {
-      _self.restService.getClient().createRequest(`${this.entityPath}/count`)
-        .asGet()
-        .withTimeout(this.timeout)
-        .send()
-        .then(this.promiseSuccess, failure => {
-          this.promiseFailure(failure);
-          reject(failure);
-        });
-    });
-    return promise;
-  }
-
-  post(user) {
+  post(entity) {
     console.log(`Posting to ${this.entityPath}`);
     var promise = new Promise((resolve, reject) => {
-      this.restService.getClient().createRequest(`${this.entityPath}`)
+      this.httpService.request(`${this.entityPath}`)
         .asPost()
         .withTimeout(this.timeout)
-        .withContent(user)
+        .withContent(entity)
         .send()
         .then(success => {
-          console.log(`${this.entityPath} response status ${success.statusCode}`);
+          console.log(`POST ${this.entityPath} response status ${success.statusCode}`);
           if(success.statusCode == 200) {
             resolve();
           } else {
@@ -85,7 +60,7 @@ export class ApiService {
     return promise;
   }
 
-  private promiseSuccess = function (success) {
+  private getSuccess = function (success) {
     console.log(`${this.entityPath} response status ${success.statusCode}`);
     if (success.statusCode == 200) {
       return JSON.parse(success.response);
@@ -94,7 +69,7 @@ export class ApiService {
     }
   }
 
-  protected promiseFailure = function (failure) {
+  protected getFailure = function (failure) {
     console.log(`${this.entityPath} resquest failed`);
     console.log(failure);
   }

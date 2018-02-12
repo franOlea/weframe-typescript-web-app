@@ -8,7 +8,7 @@ export class App {
         config.options.pushState = true;
         config.map([
           { route: ['', 'home'],    moduleId: './home',                 nav: true,  name: 'home'},
-          { route: 'callback',      moduleId: './api/login-callback',  nav: false, name: 'callback' }
+          { route: 'callback',      moduleId: './api/login-callback',   nav: false, name: 'callback' }
         ]);
 
         this.router = router;

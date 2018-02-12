@@ -4,5 +4,6 @@ export default {
   webApiUrl: "http://localhost:8999",
   tokenStateEvent: "tokenStateEvent",
   authStateEvent: "authStateEvent",
+  newAuthStateEvent: "newAuthStateEvent",
   httpServiceTimeout: 10000
 };
