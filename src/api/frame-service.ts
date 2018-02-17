@@ -1,6 +1,6 @@
 import { inject } from 'aurelia-framework';
 import { DeleteAbleApiService } from './delete-able-api-service';
-import { HttpService } from './http-service';
+import { HttpService } from './http/http-service';
 import environment from '../environment';
 
 @inject(HttpService)

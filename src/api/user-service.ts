@@ -1,12 +1,12 @@
 import { inject } from 'aurelia-framework';
-import { HttpService } from "./http-service";
+import { HttpService } from "./http/http-service";
 
 @inject(HttpService)
 export class UserService {
 
     constructor(private readonly httpService: HttpService) {}
 
-    getCurrentUserData() {
+    getCurrentUserData(): Promise<any> {
         var promise = new Promise((resolve, reject) => {
             this.httpService.request("/users/me")
                 .asGet()
@@ -22,6 +22,10 @@ export class UserService {
                 });
         });
         return promise;
+    }
+
+    isAuthenticated(): boolean {
+        return this.httpService.isAuthenticated();
     }
 
 }

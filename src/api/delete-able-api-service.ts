@@ -1,5 +1,5 @@
 import { ApiService } from './api-service';
-import { HttpService } from './http-service';
+import { HttpService } from './http/http-service';
 import environment from '../environment';
 
 export abstract class DeleteAbleApiService extends ApiService {

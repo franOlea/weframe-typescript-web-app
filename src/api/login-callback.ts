@@ -1,14 +1,18 @@
 import { inject } from 'aurelia-framework';
-import { AuthService } from './auth-service';
+import { Router } from 'aurelia-router';
+import { AuthService } from './auth/auth-service';
 
-@inject(AuthService)
+@inject(AuthService, Router)
 export class Callback {
 
-  private auth: AuthService
+  constructor(private readonly auth: AuthService, private readonly router: Router) {}
 
-  constructor(auth: AuthService) {
-    this.auth = auth;
-    this.auth.handleAuthentication();
+  created() {
+    console.log("Calling auth handler");
+    this.auth.handleAuthentication().then(() => {
+      console.log("Redirecting home");
+      this.router.navigate("home")
+    });
   }
   
 }
