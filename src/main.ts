@@ -1,10 +1,14 @@
-import {Aurelia} from 'aurelia-framework'
-import environment from './environment';
+import { Aurelia } from 'aurelia-framework';
+import { HttpClient } from 'aurelia-http-client';
 import { WebAuth } from 'auth0-js';
 import { Router } from 'aurelia-router';
 
+import environment from './environment';
+
 import { AuthService } from './api/auth/auth-service';
 import { HttpService } from './api/http/http-service';
+import { UserService } from './api/user-service';
+import { DeleteAbleApiService } from './api/delete-able-api-service';
 
 export function configure(aurelia: Aurelia) {
   aurelia.use
@@ -20,21 +24,22 @@ export function configure(aurelia: Aurelia) {
     aurelia.use.plugin('aurelia-testing');
   }
 
-  let auth0 = getAuth0();
-  let httpService = new HttpService();
-  let authService = new AuthService(auth0, httpService);
+  const auth0 = getAuth0();
+  const httpClient = getHttpClient();
+  const httpService = new HttpService(httpClient);
+  const authService = new AuthService(auth0, httpService);
   authService.initialize();
-
-  aurelia.container.registerSingleton(WebAuth, () => {
-    return auth0;
-  });
-
-  aurelia.container.registerSingleton(HttpService, () => {
-    return httpService;
-  });
 
   aurelia.container.registerSingleton(AuthService, () => {
     return authService;
+  });
+
+  aurelia.container.registerSingleton(UserService, () => {
+    return new UserService(httpService);
+  })
+
+  aurelia.container.registerSingleton("FrameService", () => {
+    return new DeleteAbleApiService(httpService, "/frames", 5000);
   });
 
   aurelia.start().then(() => aurelia.setRoot());
@@ -51,5 +56,12 @@ function getAuth0(): WebAuth {
     audience: environment.auth0Audience,
     responseType: environment.auth0ResponseType,
     scope: environment.auth0Scope
+  });
+}
+
+function getHttpClient(): HttpClient {
+  return new HttpClient().configure(configuration => {
+    configuration.withBaseUrl(environment.webApiUrl);
+    configuration.withCredentials(true);
   });
 }

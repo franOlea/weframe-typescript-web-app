@@ -10,8 +10,7 @@ export class NavBar {
   constructor(private readonly userService: UserService, 
               private readonly authService: AuthService) {}
 
-  created() {
-    console.log("Nav bar created " + this.isAuthenticated());
+  created(): void {
     if(this.isAuthenticated()) {
       this.getCurrentUser();
     } else {
@@ -19,11 +18,11 @@ export class NavBar {
     }
   }
 
-  login() {
+  login(): void {
     this.authService.login();
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
   }
 
@@ -31,10 +30,9 @@ export class NavBar {
     return this.userService.isAuthenticated();
   }
 
-  getCurrentUser() {
+  getCurrentUser(): void {
     this.userService.getCurrentUserData().then(
       success => {
-        console.log(success);
         this.user = success;
       },
       failure => {

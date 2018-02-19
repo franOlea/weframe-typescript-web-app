@@ -1,19 +1,16 @@
 import { HttpClient } from 'aurelia-http-client';
-import { inject } from 'aurelia-framework';
-import environment from '../../environment';
+import { RequestBuilder } from 'aurelia-http-client';
 
 import { AuthListener } from '../auth/auth-listener';
 
 export class HttpService implements AuthListener {
 
   private token: string;
-  private httpClient: HttpClient;
 
-  constructor() {
-    this.httpClient = this.createClient();
+  constructor(private readonly httpClient: HttpClient) {
   }
 
-  request(path) {
+  request(path): RequestBuilder {
     var _self = this;
     return this.httpClient.createRequest(path)
       .withInterceptor({
@@ -23,16 +20,24 @@ export class HttpService implements AuthListener {
           }
           return request;
         }
+      })
+      .withInterceptor({
+          request(request) {
+            console.log(`${request.method} ${request.buildFullUrl()}`);
+            return request;
+          },
+          response(response) {
+            console.log(`${response.requestMessage.method} ${response.requestMessage.buildFullUrl()} ${response.statusCode}`);
+            return response;
+          }
       });
   }
 
-  onAuthenticated(token: string) {
+  onAuthenticated(token: string): void {
     this.token = token;
-    console.log("Authenticated. " + token);
   }
-  onUnauthenticated() {
+  onUnauthenticated(): void {
     this.token = null;
-    console.log("Unauthenticated. " + this.token);
   }
 
   isAuthenticated(): boolean {
@@ -41,13 +46,5 @@ export class HttpService implements AuthListener {
     } else {
       return false;
     }
-  }
-
-  private createClient(): HttpClient {
-    return new HttpClient()
-      .configure(configuration => {
-        configuration.withBaseUrl(environment.webApiUrl);
-        configuration.withCredentials(true);
-      });
   }
 }

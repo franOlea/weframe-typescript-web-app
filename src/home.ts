@@ -1,34 +1,18 @@
 import { inject } from 'aurelia-framework';
-import { EventAggregator } from 'aurelia-event-aggregator';
-import { AuthService } from './old-api/auth-service';
-import { RestService } from './old-api/rest-service';
 
-@inject(AuthService, EventAggregator, RestService)
+import { DeleteAbleApiService } from './api/delete-able-api-service';
+
+@inject("FrameService")
 export class Home {
 
-  private authenticated: boolean;
-  private user: string;
-  private authService: AuthService;
+  constructor(private readonly frameService: DeleteAbleApiService) {}
 
-  constructor(private auth: AuthService, private eventAggregator: EventAggregator, private restService: RestService) {
-    // this.eventAggregator.subscribe('authChange', (authenticated) => {
-    //   this.authenticated = authenticated;
-    // });
-    // this.authService = auth;
+  created() {
+    this.frameService.get().then(success => {
+      console.log(success);
+    }, failure => {
+      console.log(failure);
+    });
   }
-
-  // test() {
-  //   console.log("test");
-  //   this.restService.getClient().createRequest("http://localhost:8999/users/me")
-  //       .asGet()
-  //       .withTimeout(3000)
-  //       .send()
-  //       .then(success => {
-  //         console.log(success);
-  //         this.user = success.response;
-  //       }, failure => {
-  //         console.log(failure);
-  //       });
-  // }
 
 }

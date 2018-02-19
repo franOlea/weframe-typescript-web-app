@@ -1,7 +1,5 @@
-import { inject } from 'aurelia-framework';
 import { HttpService } from "./http/http-service";
 
-@inject(HttpService)
 export class UserService {
 
     constructor(private readonly httpService: HttpService) {}

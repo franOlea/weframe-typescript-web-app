@@ -1,7 +1,4 @@
 import { WebAuth } from 'auth0-js';
-import { inject } from 'aurelia-framework';
-import { EventAggregator } from 'aurelia-event-aggregator';
-import environment from '../../environment'
 
 import { AuthListener } from './auth-listener';
 
@@ -10,13 +7,14 @@ export class AuthService {
   constructor(private readonly auth0: WebAuth,
               private readonly listener: AuthListener) {}
 
-  login() {
+  login(): void {
+    console.log("Loging in.");
     this.auth0.authorize();
   }
 
-  logout() {
+  logout(): void {
+    console.log("Loging out.");
     this.deleteToken();
-    console.log("Tokens removed.");
     this.listener.onUnauthenticated();
     location.reload(true);
   }
@@ -31,7 +29,7 @@ export class AuthService {
           console.log("Login successful for user " + authResult.idTokenPayload.sub);
           resolve();
         } else if (err) {
-          console.log(err);
+          console.error(err);
           this.listener.onUnauthenticated();
           resolve();
         } else {
@@ -43,46 +41,47 @@ export class AuthService {
     });
   }
 
-  initialize() {
+  initialize(): void {
+    console.debug("Initializing auth service.");
     if (this.hasExpiredToken()) {
+      console.debug("Expired token, calling listener for no authentication.");
       this.listener.onUnauthenticated();
     } else {
-      this.listener.onAuthenticated(this.loadToken().accessToken);
+      console.debug("Valid token present, loading token.");
+      const token = this.loadToken();
+      console.debug("Token loaded, calling listener for authentication.");
+      this.listener.onAuthenticated(token.accessToken);
     }
   }
 
-  private persistToken(authResult) {
-    // Set the time that the access token will expire at
-    let expiresAt = JSON.stringify(
+  private persistToken(authResult): void {
+    const expiresAt = JSON.stringify(
       authResult.expiresIn * 1000 + new Date().getTime()
     );
     localStorage.setItem('access_token', authResult.accessToken);
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
+
+    console.debug("Token persisted.");
   }
 
-  private deleteToken() {
-    // Clear access token and ID token from local storage
+  private deleteToken(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+
+    console.debug("Token deleted.");
   }
 
-  private loadToken() {
-    if (this.hasExpiredToken()) {
-      return null;
-    } else {
-      return {
-        accessToken: localStorage.getItem('access_token'),
-        idToken: localStorage.getItem('id_token')
-      };
-    }
+  private loadToken(): any {
+    return {
+      accessToken: localStorage.getItem('access_token'),
+      idToken: localStorage.getItem('id_token')
+    };
   }
 
   private hasExpiredToken(): boolean {
-    // Check whether the current time is past the
-    // access token's expiry time
-    let expiresAt = JSON.parse(localStorage.getItem('expires_at'));
+    const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
     return new Date().getTime() > expiresAt;
   }
 
