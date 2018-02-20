@@ -6,7 +6,7 @@ export default {
   auth0RedirectUri: 'http://localhost:9000/callback',
   auth0Audience: 'http://localhost:8080',
   auth0ResponseType: 'token id_token',
-  auth0Scope: 'openid',
+  auth0Scope: 'roles',
   webApiUrl: "http://localhost:8999",
   tokenStateEvent: "tokenStateEvent",
   authStateEvent: "authStateEvent",
