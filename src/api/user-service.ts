@@ -5,7 +5,7 @@ export class UserService {
     constructor(private readonly httpService: HttpService) {}
 
     getCurrentUserData(): Promise<any> {
-        var promise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             this.httpService.request("/users/me")
                 .asGet()
                 .send()
@@ -19,7 +19,6 @@ export class UserService {
                     reject(failure);
                 });
         });
-        return promise;
     }
 
     isAuthenticated(): boolean {

@@ -1,17 +1,20 @@
-import { HttpClient } from 'aurelia-http-client';
-import { RequestBuilder } from 'aurelia-http-client';
+import {inject} from 'aurelia-framework';
+import {HttpClient, RequestBuilder} from 'aurelia-http-client';
 
-import { AuthListener } from '../auth/auth-listener';
+import {AuthListener} from '../auth/auth-listener';
+import environment from "../../environment";
 
+@inject("HttpClient")
 export class HttpService implements AuthListener {
 
   private token: string;
 
-  constructor(private readonly httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient) {
+    this.httpClient = this.createUnauthenticatedClient();
   }
 
   request(path): RequestBuilder {
-    var _self = this;
+    const _self = this;
     return this.httpClient.createRequest(path)
       .withInterceptor({
         request(request) {
@@ -41,10 +44,32 @@ export class HttpService implements AuthListener {
   }
 
   isAuthenticated(): boolean {
-    if(this.token != null) {
-      return true;
+    return this.token != null;
+  }
+
+  protected authenticationChanged(authChange) {
+    if(authChange.authenticated) {
+      console.log("Authenticated, created http client with access token.");
+      this.httpClient = this.createAuthenticatedClient(authChange.accessToken);
     } else {
-      return false;
+      console.log("Logged out, created default http client.");
+      this.httpClient = this.createUnauthenticatedClient();
     }
+  }
+
+  private createUnauthenticatedClient(): HttpClient {
+    return new HttpClient()
+      .configure(configuration => {
+        configuration.withBaseUrl(environment.webApiUrl);
+      });
+  }
+
+  private createAuthenticatedClient(accessToken): HttpClient {
+    return new HttpClient()
+      .configure(configuration => {
+        configuration.withBaseUrl(environment.webApiUrl);
+        configuration.withCredentials(true);
+        configuration.withHeader('Authorization', `Bearer ${accessToken}`);
+      });
   }
 }

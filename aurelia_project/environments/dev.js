@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = {
+    debug: true,
+    testing: true,
+    auth0Domain: 'weframe.auth0.com',
+    auth0ClientID: 'T4odJUBxMAikG5P6sEaq7wk5OqdabVYL',
+    auth0RedirectUri: 'http://localhost:9000/callback',
+    auth0Audience: 'http://localhost:8080',
+    auth0ResponseType: 'token id_token',
+    auth0Scope: 'roles',
+    webApiUrl: "http://localhost:8080",
+    tokenStateEvent: "tokenStateEvent",
+    authStateEvent: "authStateEvent",
+    newAuthStateEvent: "newAuthStateEvent",
+    httpServiceTimeout: 10000
+};

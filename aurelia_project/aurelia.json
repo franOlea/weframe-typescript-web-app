@@ -59,12 +59,17 @@
           "aurelia-templating-binding",
           "velocity-animate",
           "tether",
+          "jquery",
           {
-            "name": "aurelia-bootstrap",
-            "path": "../node_modules/aurelia-bootstrap/dist/amd",
-            "main": "index",
+            "name": "bootstrap",
+            "path": "../node_modules/bootstrap/dist",
+            "main": "js/bootstrap.bundle.min",
+            "deps": [
+              "jquery"
+            ],
+            "exports": "$",
             "resources": [
-              "**/*.html"
+              "css/bootstrap.css"
             ]
           },
           {

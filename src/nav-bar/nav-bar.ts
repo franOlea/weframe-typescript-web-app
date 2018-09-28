@@ -5,6 +5,7 @@ import { AuthService } from '../api/auth/auth-service';
 @inject(UserService, AuthService)
 export class NavBar {
 
+  private authenticated: boolean;
   private user;
 
   constructor(private readonly userService: UserService, 
@@ -12,8 +13,10 @@ export class NavBar {
 
   created(): void {
     if(this.isAuthenticated()) {
+      this.authenticated = true;
       this.getCurrentUser();
     } else {
+      this.authenticated = false;
       this.user = null;
     }
   }

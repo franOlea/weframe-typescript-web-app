@@ -1,15 +1,14 @@
 import { ApiService } from './api-service';
 import { HttpService } from './http/http-service';
-import environment from '../environment';
 
-export class DeleteAbleApiService extends ApiService {
+export abstract class DeleteAbleApiService<T> extends ApiService<T> {
 
-  constructor(httpService: HttpService, entityPath: string, timeout: number) {
+  constructor(httpService: HttpService, entityPath: string, timeout: number = 3000) {
     super(httpService, entityPath, timeout);
   }
 
-  delete(id: number) {
-    var promise = new Promise((resolve, reject) => {
+  remove(id: number) {
+    return new Promise((resolve, reject) => {
       this.httpService.request(`${this.entityPath}/${id}`)
         .asDelete()
         .withTimeout(this.timeout)

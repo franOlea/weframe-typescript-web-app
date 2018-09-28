@@ -7,7 +7,7 @@ export default {
   auth0Audience: 'http://localhost:8080',
   auth0ResponseType: 'token id_token',
   auth0Scope: 'roles',
-  webApiUrl: "http://localhost:8999",
+  webApiUrl: "http://localhost:8080",
   tokenStateEvent: "tokenStateEvent",
   authStateEvent: "authStateEvent",
   newAuthStateEvent: "newAuthStateEvent",

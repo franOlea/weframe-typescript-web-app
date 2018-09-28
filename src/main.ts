@@ -1,14 +1,13 @@
-import { Aurelia } from 'aurelia-framework';
-import { HttpClient } from 'aurelia-http-client';
-import { WebAuth } from 'auth0-js';
-import { Router } from 'aurelia-router';
+import {Aurelia} from 'aurelia-framework';
+import {HttpClient} from 'aurelia-http-client';
+import {WebAuth} from 'auth0-js';
 
 import environment from './environment';
 
-import { AuthService } from './api/auth/auth-service';
-import { HttpService } from './api/http/http-service';
-import { UserService } from './api/user-service';
-import { DeleteAbleApiService } from './api/delete-able-api-service';
+import {AuthService} from './api/auth/auth-service';
+import {HttpService} from './api/http/http-service';
+import {UserService} from './api/user-service';
+import {FrameService} from "./product/frame/frame-service";
 
 export function configure(aurelia: Aurelia) {
   aurelia.use
@@ -36,10 +35,10 @@ export function configure(aurelia: Aurelia) {
 
   aurelia.container.registerSingleton(UserService, () => {
     return new UserService(httpService);
-  })
+  });
 
   aurelia.container.registerSingleton("FrameService", () => {
-    return new DeleteAbleApiService(httpService, "/frames", 5000);
+    return new FrameService(httpService);
   });
 
   aurelia.start().then(() => aurelia.setRoot());
