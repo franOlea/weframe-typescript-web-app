@@ -5,14 +5,11 @@ import {Error} from "../../../error/Error";
 @inject(FrameService)
 export class FrameSelector {
 
-  private service : FrameService;
-
   private working : boolean;
   private frames : Frame[];
   private error : Error;
 
-  constructor(service : FrameService) {
-    this.service = service;
+  constructor(private service : FrameService) {
   }
 
   created() {

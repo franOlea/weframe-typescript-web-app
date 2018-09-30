@@ -352,7 +352,21 @@ define('product/frame/canvas/frame-selector',["require", "exports", "aurelia-fra
 
 
 
-define('text!product/frame/canvas/frame-selector.html', ['module'], function(module) { module.exports = "<template><div class=\"list-group col-md-3\" if.bind=\"frames\"><a href=\"#\" class=\"list-group-item\" repeat.for=\"frame of frames\"><div class=\"row\"><div class=\"col-md-6 vcenter frame-selector-row\"><img src=\"${frame.picture.url}\" alt=\"${frame.name}\" class=\"img-reponsive img-rounded frame-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${frame.name}</h4><p class=\"list-group-item-text\" data-toggle=\"frame-selector-tooltip\" data-placement=\"right\" title=\"${frame.description}\">${frame.description}</p></div></div></a></div><style>.frame-selector-row{background:#0ff}.frame-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
+define('text!product/frame/canvas/frame-selector.html', ['module'], function(module) { module.exports = "<template><a href=\"#\" class=\"list-group-item\" repeat.for=\"frame of frames\"><div class=\"row\"><div class=\"col-md-6 vcenter frame-selector-row\"><img src=\"${frame.picture.url}\" alt=\"${frame.name}\" class=\"img-reponsive img-rounded frame-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${frame.name}</h4><p class=\"list-group-item-text\" title=\"${frame.description}\">${frame.description}</p></div></div></a><style>.frame-selector-row{background:#0ff}.frame-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
+define('product/canvas/product-selector-accordion',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var ProductSelectorAccordion = (function () {
+        function ProductSelectorAccordion() {
+        }
+        return ProductSelectorAccordion;
+    }());
+    exports.ProductSelectorAccordion = ProductSelectorAccordion;
+});
+
+
+
+define('text!product/canvas/product-selector-accordion.html', ['module'], function(module) { module.exports = "<template><button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModal\">Launch demo modal</button><div class=\"modal fade\" id=\"exampleModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h5 class=\"modal-title\" id=\"exampleModalLabel\">Modal title</h5><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div><div class=\"modal-body\">...</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button> <button type=\"button\" class=\"btn btn-primary\">Save changes</button></div></div></div></div></template>"; });
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -542,7 +556,7 @@ define('home',["require", "exports"], function (require, exports) {
 
 
 
-define('text!home.html', ['module'], function(module) { module.exports = "<template><require from=\"./product/frame/frame-list\"></require><require from=\"./product/frame/canvas/frame-selector\"></require><div class=\"container-fluid\"><frame-list></frame-list><frame-selector></frame-selector></div></template>"; });
+define('text!home.html', ['module'], function(module) { module.exports = "<template><require from=\"./product/canvas/product-selector-accordion\"></require><div class=\"container-fluid\"><div class=\"col-md-3\" as-element=\"product-selector-accordion\"></div></div></template>"; });
 define('error/Error',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
