@@ -1,6 +1,6 @@
 import {Aurelia} from 'aurelia-framework';
 import {HttpClient} from 'aurelia-http-client';
-import {WebAuth} from 'auth0-js';
+import auth0 from 'auth0-js';
 
 import environment from './environment';
 
@@ -12,8 +12,7 @@ import {FrameService} from "./product/frame/frame-service";
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
-    .feature('resources')
-    .plugin('aurelia-bootstrap', config => config.options.version = 4);
+    .feature('resources');
 
   if (environment.debug) {
     aurelia.use.developmentLogging();
@@ -47,8 +46,8 @@ export function configure(aurelia: Aurelia) {
 
 
 
-function getAuth0(): WebAuth {
-  return new WebAuth({
+function getAuth0(): auth0.WebAuth {
+  return new auth0.WebAuth({
     domain: environment.auth0Domain,
     clientID: environment.auth0ClientID,
     redirectUri: environment.auth0RedirectUri,

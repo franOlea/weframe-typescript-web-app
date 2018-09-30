@@ -483,8 +483,7 @@ define('main',["require", "exports", "aurelia-http-client", "auth0-js", "./envir
     function configure(aurelia) {
         aurelia.use
             .standardConfiguration()
-            .feature('resources')
-            .plugin('aurelia-bootstrap', function (config) { return config.options.version = 4; });
+            .feature('resources');
         if (environment_1.default.debug) {
             aurelia.use.developmentLogging();
         }
@@ -509,7 +508,7 @@ define('main',["require", "exports", "aurelia-http-client", "auth0-js", "./envir
     }
     exports.configure = configure;
     function getAuth0() {
-        return new auth0_js_1.WebAuth({
+        return new auth0_js_1.default.WebAuth({
             domain: environment_1.default.auth0Domain,
             clientID: environment_1.default.auth0ClientID,
             redirectUri: environment_1.default.auth0RedirectUri,
