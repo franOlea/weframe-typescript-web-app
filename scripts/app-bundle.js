@@ -315,12 +315,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('product/frame/canvas/frame-selector',["require", "exports", "aurelia-framework", "../frame-service", "../../../error/Error"], function (require, exports, aurelia_framework_1, frame_service_1, Error_1) {
+define('product/frame/canvas/frame-selector',["require", "exports", "aurelia-framework", "../frame-service", "../../../error/Error", "aurelia-event-aggregator"], function (require, exports, aurelia_framework_1, frame_service_1, Error_1, aurelia_event_aggregator_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var FrameSelector = (function () {
-        function FrameSelector(service) {
+        function FrameSelector(service, eventAggregator) {
             this.service = service;
+            this.eventAggregator = eventAggregator;
         }
         FrameSelector.prototype.created = function () {
             this.updateFrameList();
@@ -341,9 +342,12 @@ define('product/frame/canvas/frame-selector',["require", "exports", "aurelia-fra
                 _this.working = false;
             });
         };
+        FrameSelector.prototype.select = function (frame) {
+            this.eventAggregator.publish(frame);
+        };
         FrameSelector = __decorate([
-            aurelia_framework_1.inject(frame_service_1.FrameService),
-            __metadata("design:paramtypes", [frame_service_1.FrameService])
+            aurelia_framework_1.inject(frame_service_1.FrameService, aurelia_event_aggregator_1.EventAggregator),
+            __metadata("design:paramtypes", [frame_service_1.FrameService, aurelia_event_aggregator_1.EventAggregator])
         ], FrameSelector);
         return FrameSelector;
     }());
@@ -352,7 +356,40 @@ define('product/frame/canvas/frame-selector',["require", "exports", "aurelia-fra
 
 
 
-define('text!product/frame/canvas/frame-selector.html', ['module'], function(module) { module.exports = "<template><a href=\"#\" class=\"list-group-item\" repeat.for=\"frame of frames\"><div class=\"row\"><div class=\"col-md-6 vcenter frame-selector-row\"><img src=\"${frame.picture.url}\" alt=\"${frame.name}\" class=\"img-reponsive img-rounded frame-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${frame.name}</h4><p class=\"list-group-item-text\" title=\"${frame.description}\">${frame.description}</p></div></div></a><style>.frame-selector-row{background:#0ff}.frame-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
+define('text!product/frame/canvas/frame-selector.html', ['module'], function(module) { module.exports = "<template><a href=\"#\" class=\"list-group-item\" repeat.for=\"frame of frames\"><div class=\"row\" click.delegate=\"select(frame)\"><div class=\"col-md-6 vcenter frame-selector-row\"><img src=\"${frame.picture.url}\" alt=\"${frame.name}\" class=\"img-reponsive img-rounded frame-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${frame.name}</h4><p class=\"list-group-item-text\" title=\"${frame.description}\">${frame.description}</p></div></div></a><style>.frame-selector-row{background:#0ff}.frame-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('product/canvas/workspace',["require", "exports", "aurelia-framework", "../frame/frame-service", "aurelia-event-aggregator"], function (require, exports, aurelia_framework_1, frame_service_1, aurelia_event_aggregator_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Workspace = (function () {
+        function Workspace(eventAggregator) {
+            this.eventAggregator = eventAggregator;
+        }
+        Workspace.prototype.created = function () {
+            this.eventAggregator.subscribe(frame_service_1.Frame, function (frame) {
+                console.log("New frame selected: " + frame.name);
+            });
+        };
+        Workspace = __decorate([
+            aurelia_framework_1.inject(aurelia_event_aggregator_1.EventAggregator),
+            __metadata("design:paramtypes", [aurelia_event_aggregator_1.EventAggregator])
+        ], Workspace);
+        return Workspace;
+    }());
+    exports.Workspace = Workspace;
+});
+
+
+
+define('text!product/canvas/workspace.html', ['module'], function(module) { module.exports = "<template>Hola</template>"; });
 define('product/canvas/product-selector-accordion',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -366,7 +403,68 @@ define('product/canvas/product-selector-accordion',["require", "exports"], funct
 
 
 
-define('text!product/canvas/product-selector-accordion.html', ['module'], function(module) { module.exports = "<template><button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModal\">Launch demo modal</button><div class=\"modal fade\" id=\"exampleModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h5 class=\"modal-title\" id=\"exampleModalLabel\">Modal title</h5><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div><div class=\"modal-body\">...</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button> <button type=\"button\" class=\"btn btn-primary\">Save changes</button></div></div></div></div></template>"; });
+define('text!product/canvas/product-selector-accordion.html', ['module'], function(module) { module.exports = "<template><aubs-accordion class=\"product-selector-accordion\"><aubs-accordion-group title=\"Marco\" class=\"accordion-selector\"><require from=\"../frame/canvas/frame-selector\"></require><div class=\"list-group\" as-element=\"frame-selector\"></div></aubs-accordion-group><aubs-accordion-group title=\"Panel\" class=\"accordion-selector\"><require from=\"../backboard/canvas/backboard-selector\"></require><div class=\"list-group\" as-element=\"backboard-selector\"></div></aubs-accordion-group></aubs-accordion><style>.list-group{max-height:400px;overflow:scroll;-webkit-overflow-scrolling:touch}</style></template>"; });
+define('product/canvas/canvas',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Canvas = (function () {
+        function Canvas() {
+        }
+        return Canvas;
+    }());
+    exports.Canvas = Canvas;
+});
+
+
+
+define('text!product/canvas/canvas.html', ['module'], function(module) { module.exports = "<template><require from=\"./workspace\"></require><require from=\"./product-selector-accordion\"></require><div class=\"col-md-9\" as-element=\"workspace\" style=\"background:#adff2f\"></div><div class=\"col-md-3\" as-element=\"product-selector-accordion\"></div></template>"; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('product/backboard/canvas/backboard-selector',["require", "exports", "aurelia-framework", "../backboard-service", "../../../error/Error"], function (require, exports, aurelia_framework_1, backboard_service_1, Error_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var BackboardSelector = (function () {
+        function BackboardSelector(service) {
+            this.service = service;
+        }
+        BackboardSelector.prototype.created = function () {
+            this.updateBackboardList();
+        };
+        BackboardSelector.prototype.updateBackboardList = function (page, size) {
+            var _this = this;
+            if (page === void 0) { page = 0; }
+            if (size === void 0) { size = 10; }
+            this.working = true;
+            this.service.get(page, size).then(function (success) {
+                _this.backboards = success.entity;
+                _this.backboards.forEach(function (backboard) {
+                    console.log(backboard);
+                }, _this);
+                _this.working = false;
+            }, function (failure) {
+                _this.error = new Error_1.Error('Ups', 'Parece que el sistema no response, por favor intenta nuevamente mas tarde.');
+                _this.working = false;
+            });
+        };
+        BackboardSelector = __decorate([
+            aurelia_framework_1.inject(backboard_service_1.BackboardService),
+            __metadata("design:paramtypes", [backboard_service_1.BackboardService])
+        ], BackboardSelector);
+        return BackboardSelector;
+    }());
+    exports.BackboardSelector = BackboardSelector;
+});
+
+
+
+define('text!product/backboard/canvas/backboard-selector.html', ['module'], function(module) { module.exports = "<template><a href=\"#\" class=\"list-group-item\" repeat.for=\"backboard of backboards\"><div class=\"row\"><div class=\"col-md-6 vcenter backboard-selector-row\"><img src=\"${backboard.picture.url}\" alt=\"${backboard.name}\" class=\"img-reponsive img-rounded backboard-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${backboard.name}</h4><p class=\"list-group-item-text\" title=\"${backboard.description}\">${backboard.description}</p></div></div></a><style>.backboard-selector-row{background:#0ff}.backboard-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -497,6 +595,7 @@ define('main',["require", "exports", "aurelia-http-client", "auth0-js", "./envir
     function configure(aurelia) {
         aurelia.use
             .standardConfiguration()
+            .plugin('aurelia-bootstrap', function (config) { return config.options.version = 4; })
             .feature('resources');
         if (environment_1.default.debug) {
             aurelia.use.developmentLogging();
@@ -556,7 +655,7 @@ define('home',["require", "exports"], function (require, exports) {
 
 
 
-define('text!home.html', ['module'], function(module) { module.exports = "<template><require from=\"./product/canvas/product-selector-accordion\"></require><div class=\"container-fluid\"><div class=\"col-md-3\" as-element=\"product-selector-accordion\"></div></div></template>"; });
+define('text!home.html', ['module'], function(module) { module.exports = "<template><require from=\"./product/canvas/canvas\"></require><div class=\"container-fluid\" style=\"height:100%;background:gray\"><div class=\"row h-100\" as-element=\"canvas\" style=\"padding:1%\"></div></div><style>body,html{height:100%}</style></template>"; });
 define('error/Error',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -615,7 +714,7 @@ define('app',["require", "exports"], function (require, exports) {
 
 
 
-define('text!app.html', ['module'], function(module) { module.exports = "<template><require from=\"bootstrap/css/bootstrap.css\"></require><router-view></router-view></template>"; });
+define('text!app.html', ['module'], function(module) { module.exports = "<template><router-view></router-view></template>"; });
 define('api/user-service',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });

@@ -1,6 +1,6 @@
 <template>
   <a href="#" class="list-group-item" repeat.for="frame of frames">
-    <div class="row">
+    <div class="row" click.delegate="select(frame)">
       <div class="col-md-6 vcenter frame-selector-row">
         <img src="${frame.picture.url}"  alt="${frame.name}" class="img-reponsive img-rounded frame-selector-thumbnail vcenter" />
       </div>

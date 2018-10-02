@@ -12,6 +12,7 @@ import {FrameService} from "./product/frame/frame-service";
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
+    .plugin('aurelia-bootstrap', config => config.options.version = 4)
     .feature('resources');
 
   if (environment.debug) {

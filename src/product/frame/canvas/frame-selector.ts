@@ -1,16 +1,16 @@
 import {inject} from 'aurelia-framework';
 import {Frame, FrameService} from "../frame-service";
 import {Error} from "../../../error/Error";
+import {EventAggregator} from 'aurelia-event-aggregator';
 
-@inject(FrameService)
+@inject(FrameService, EventAggregator)
 export class FrameSelector {
 
   private working : boolean;
   private frames : Frame[];
   private error : Error;
 
-  constructor(private service : FrameService) {
-  }
+  constructor(private service : FrameService, private eventAggregator: EventAggregator) {}
 
   created() {
     this.updateFrameList();
@@ -28,6 +28,10 @@ export class FrameSelector {
       this.error = new Error('Ups', 'Parece que el sistema no response, por favor intenta nuevamente mas tarde.');
       this.working = false;
     });
+  }
+
+  private select(frame: Frame) {
+    this.eventAggregator.publish(frame);
   }
 
 }
