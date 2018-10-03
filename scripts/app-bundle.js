@@ -366,19 +366,49 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('product/canvas/workspace',["require", "exports", "aurelia-framework", "../frame/frame-service", "aurelia-event-aggregator"], function (require, exports, aurelia_framework_1, frame_service_1, aurelia_event_aggregator_1) {
+define('product/canvas/workspace',["require", "exports", "aurelia-framework", "../frame/frame-service", "aurelia-event-aggregator", "interactjs"], function (require, exports, aurelia_framework_1, frame_service_1, aurelia_event_aggregator_1, interact) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Workspace = (function () {
         function Workspace(eventAggregator) {
             this.eventAggregator = eventAggregator;
         }
+        Workspace_1 = Workspace;
         Workspace.prototype.created = function () {
             this.eventAggregator.subscribe(frame_service_1.Frame, function (frame) {
                 console.log("New frame selected: " + frame.name);
             });
+            console.log(interact);
+            interact('.draggable')
+                .draggable({
+                inertia: true,
+                restrict: {
+                    restriction: "parent",
+                    endOnly: true,
+                    elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+                },
+                autoScroll: true,
+                onmove: Workspace_1.dragMoveListener,
+                onend: function (event) {
+                    var textEl = event.target.querySelector('p');
+                    textEl && (textEl.textContent =
+                        'moved a distance of '
+                            + (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
+                                Math.pow(event.pageY - event.y0, 2) | 0))
+                                .toFixed(2) + 'px');
+                }
+            });
         };
-        Workspace = __decorate([
+        Workspace.dragMoveListener = function (event) {
+            var target = event.target, x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx, y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            target.style.webkitTransform =
+                target.style.transform =
+                    'translate(' + x + 'px, ' + y + 'px)';
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        };
+        var Workspace_1;
+        Workspace = Workspace_1 = __decorate([
             aurelia_framework_1.inject(aurelia_event_aggregator_1.EventAggregator),
             __metadata("design:paramtypes", [aurelia_event_aggregator_1.EventAggregator])
         ], Workspace);
@@ -389,7 +419,7 @@ define('product/canvas/workspace',["require", "exports", "aurelia-framework", ".
 
 
 
-define('text!product/canvas/workspace.html', ['module'], function(module) { module.exports = "<template>Hola</template>"; });
+define('text!product/canvas/workspace.html', ['module'], function(module) { module.exports = "<template>Hola<div id=\"drag-1\" class=\"draggable\"><p>You can drag one element</p></div><div id=\"drag-2\" class=\"draggable\"><p>with each pointer</p></div><style>.draggable{width:25%;height:100%;min-height:6.5em;margin:10%;background-color:#29e;color:#fff;border-radius:.75em;padding:4%;-webkit-transform:translate(0,0);transform:translate(0,0)}#drag-1,#drag-2{width:100px;height:100px;background-color:#29e;color:#fff}</style></template>"; });
 define('product/canvas/product-selector-accordion',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });

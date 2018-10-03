@@ -85,7 +85,16 @@
           },
           "text",
           "auth0-js",
-          "interactjs"
+          {
+            "name": "interactjs",
+            "main": "index",
+            "path": "../node_modules/interactjs",
+            "resources": [
+              "dist/docs/styles/jsdoc-default.css",
+              "dist/docs/styles/prettify-jsdoc.css",
+              "dist/docs/styles/prettify.css"
+            ]
+          }
         ]
       }
     ],
