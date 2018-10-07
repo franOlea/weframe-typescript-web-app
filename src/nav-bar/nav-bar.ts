@@ -9,16 +9,19 @@ export class NavBar {
   private user;
 
   constructor(private readonly userService: UserService, 
-              private readonly authService: AuthService) {}
+              private readonly authService: AuthService) {
+    console.log('constructed')
+  }
 
   created(): void {
-    if(this.isAuthenticated()) {
-      this.authenticated = true;
-      this.getCurrentUser();
-    } else {
-      this.authenticated = false;
-      this.user = null;
-    }
+    console.log('created')
+    // if(this.isAuthenticated()) {
+    //   this.authenticated = true;
+    //   this.getCurrentUser();
+    // } else {
+    //   this.authenticated = false;
+    //   this.user = null;
+    // }
   }
 
   login(): void {

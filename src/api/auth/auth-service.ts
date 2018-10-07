@@ -5,7 +5,8 @@ import { AuthListener } from './auth-listener';
 export class AuthService {
 
   constructor(private readonly auth0: WebAuth,
-              private readonly listener: AuthListener) {}
+              private readonly listener: AuthListener) {
+    console.log("constructed auth service")}
 
   login(): void {
     console.log("Loging in.");

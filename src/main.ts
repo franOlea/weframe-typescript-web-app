@@ -29,17 +29,14 @@ export function configure(aurelia: Aurelia) {
   const httpService = new HttpService(httpClient);
   const authService = new AuthService(auth0, httpService);
   authService.initialize();
+  const userService = new UserService(httpService);
 
   aurelia.container.registerSingleton(AuthService, () => {
     return authService;
   });
 
   aurelia.container.registerSingleton(UserService, () => {
-    return new UserService(httpService);
-  });
-
-  aurelia.container.registerSingleton("FrameService", () => {
-    return new FrameService(httpService);
+    return userService;
   });
 
   aurelia.start().then(() => aurelia.setRoot());

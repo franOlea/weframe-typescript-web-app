@@ -1,15 +1,16 @@
 import {inject} from 'aurelia-framework';
 import {Backboard, BackboardService} from "../backboard-service";
 import {Error} from "../../../error/Error";
+import {EventAggregator} from 'aurelia-event-aggregator';
 
-@inject(BackboardService)
+@inject(BackboardService, EventAggregator)
 export class BackboardSelector {
 
   private working : boolean;
   private backboards : Backboard[];
   private error : Error;
 
-  constructor(private service : BackboardService) {
+  constructor(private service : BackboardService, private eventAggregator: EventAggregator) {
   }
 
   created() {
@@ -20,14 +21,15 @@ export class BackboardSelector {
     this.working = true;
     this.service.get(page, size).then(success => {
       this.backboards = success.entity;
-      this.backboards.forEach((backboard) => {
-        console.log(backboard);
-      }, this);
       this.working = false;
     }, failure => {
       this.error = new Error('Ups', 'Parece que el sistema no response, por favor intenta nuevamente mas tarde.');
       this.working = false;
     });
+  }
+
+  private select(backboard: Backboard) {
+    this.eventAggregator.publish(backboard)
   }
 
 }

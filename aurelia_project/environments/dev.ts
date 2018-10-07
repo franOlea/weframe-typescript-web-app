@@ -1,6 +1,6 @@
 export default {
-  debug: true,
-  testing: true,
+  debug: false,
+  testing: false,
   auth0Domain: 'weframe.auth0.com',
   auth0ClientID: 'T4odJUBxMAikG5P6sEaq7wk5OqdabVYL',
   auth0RedirectUri: 'http://localhost:9000/callback',

@@ -333,9 +333,6 @@ define('product/frame/canvas/frame-selector',["require", "exports", "aurelia-fra
             this.working = true;
             this.service.get(page, size).then(function (success) {
                 _this.frames = success.entity;
-                _this.frames.forEach(function (frame) {
-                    console.log(frame);
-                }, _this);
                 _this.working = false;
             }, function (failure) {
                 _this.error = new Error_1.Error('Ups', 'Parece que el sistema no response, por favor intenta nuevamente mas tarde.');
@@ -366,49 +363,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('product/canvas/workspace',["require", "exports", "aurelia-framework", "../frame/frame-service", "aurelia-event-aggregator", "interactjs"], function (require, exports, aurelia_framework_1, frame_service_1, aurelia_event_aggregator_1, interact) {
+define('product/canvas/workspace',["require", "exports", "aurelia-framework", "../frame/frame-service", "aurelia-event-aggregator", "../backboard/backboard-service"], function (require, exports, aurelia_framework_1, frame_service_1, aurelia_event_aggregator_1, backboard_service_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Workspace = (function () {
         function Workspace(eventAggregator) {
             this.eventAggregator = eventAggregator;
         }
-        Workspace_1 = Workspace;
         Workspace.prototype.created = function () {
+            var _self = this;
             this.eventAggregator.subscribe(frame_service_1.Frame, function (frame) {
                 console.log("New frame selected: " + frame.name);
+                _self.frame = frame;
             });
-            console.log(interact);
-            interact('.draggable')
-                .draggable({
-                inertia: true,
-                restrict: {
-                    restriction: "parent",
-                    endOnly: true,
-                    elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-                },
-                autoScroll: true,
-                onmove: Workspace_1.dragMoveListener,
-                onend: function (event) {
-                    var textEl = event.target.querySelector('p');
-                    textEl && (textEl.textContent =
-                        'moved a distance of '
-                            + (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
-                                Math.pow(event.pageY - event.y0, 2) | 0))
-                                .toFixed(2) + 'px');
-                }
+            this.eventAggregator.subscribe(backboard_service_1.Backboard, function (backboard) {
+                console.log("New backboard selected: " + backboard.name);
+                _self.backboard = backboard;
             });
         };
-        Workspace.dragMoveListener = function (event) {
-            var target = event.target, x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx, y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-            target.style.webkitTransform =
-                target.style.transform =
-                    'translate(' + x + 'px, ' + y + 'px)';
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-        };
-        var Workspace_1;
-        Workspace = Workspace_1 = __decorate([
+        Workspace = __decorate([
             aurelia_framework_1.inject(aurelia_event_aggregator_1.EventAggregator),
             __metadata("design:paramtypes", [aurelia_event_aggregator_1.EventAggregator])
         ], Workspace);
@@ -419,7 +392,7 @@ define('product/canvas/workspace',["require", "exports", "aurelia-framework", ".
 
 
 
-define('text!product/canvas/workspace.html', ['module'], function(module) { module.exports = "<template>Hola<div id=\"drag-1\" class=\"draggable\"><p>You can drag one element</p></div><div id=\"drag-2\" class=\"draggable\"><p>with each pointer</p></div><style>.draggable{width:25%;height:100%;min-height:6.5em;margin:10%;background-color:#29e;color:#fff;border-radius:.75em;padding:4%;-webkit-transform:translate(0,0);transform:translate(0,0)}#drag-1,#drag-2{width:100px;height:100px;background-color:#29e;color:#fff}</style></template>"; });
+define('text!product/canvas/workspace.html', ['module'], function(module) { module.exports = "<template>Hola <img src=\"${frame.picture.url}\" alt=\"${frame.name}\" class=\"img-reponsive canvas-element vcenter\" id=\"canvas-frame\" if.bind=\"frame\"> <img src=\"${backboard.picture.url}\" alt=\"${backboard.name}\" class=\"img-reponsive canvas-element vcenter\" id=\"canvas-backboard\" if.bind=\"backboard\"><style>#canvas-frame{z-index:1}#canvas-backboard{z-index:0}.canvas-element{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto}</style></template>"; });
 define('product/canvas/product-selector-accordion',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -457,12 +430,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('product/backboard/canvas/backboard-selector',["require", "exports", "aurelia-framework", "../backboard-service", "../../../error/Error"], function (require, exports, aurelia_framework_1, backboard_service_1, Error_1) {
+define('product/backboard/canvas/backboard-selector',["require", "exports", "aurelia-framework", "../backboard-service", "../../../error/Error", "aurelia-event-aggregator"], function (require, exports, aurelia_framework_1, backboard_service_1, Error_1, aurelia_event_aggregator_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BackboardSelector = (function () {
-        function BackboardSelector(service) {
+        function BackboardSelector(service, eventAggregator) {
             this.service = service;
+            this.eventAggregator = eventAggregator;
         }
         BackboardSelector.prototype.created = function () {
             this.updateBackboardList();
@@ -474,18 +448,18 @@ define('product/backboard/canvas/backboard-selector',["require", "exports", "aur
             this.working = true;
             this.service.get(page, size).then(function (success) {
                 _this.backboards = success.entity;
-                _this.backboards.forEach(function (backboard) {
-                    console.log(backboard);
-                }, _this);
                 _this.working = false;
             }, function (failure) {
                 _this.error = new Error_1.Error('Ups', 'Parece que el sistema no response, por favor intenta nuevamente mas tarde.');
                 _this.working = false;
             });
         };
+        BackboardSelector.prototype.select = function (backboard) {
+            this.eventAggregator.publish(backboard);
+        };
         BackboardSelector = __decorate([
-            aurelia_framework_1.inject(backboard_service_1.BackboardService),
-            __metadata("design:paramtypes", [backboard_service_1.BackboardService])
+            aurelia_framework_1.inject(backboard_service_1.BackboardService, aurelia_event_aggregator_1.EventAggregator),
+            __metadata("design:paramtypes", [backboard_service_1.BackboardService, aurelia_event_aggregator_1.EventAggregator])
         ], BackboardSelector);
         return BackboardSelector;
     }());
@@ -494,7 +468,7 @@ define('product/backboard/canvas/backboard-selector',["require", "exports", "aur
 
 
 
-define('text!product/backboard/canvas/backboard-selector.html', ['module'], function(module) { module.exports = "<template><a href=\"#\" class=\"list-group-item\" repeat.for=\"backboard of backboards\"><div class=\"row\"><div class=\"col-md-6 vcenter backboard-selector-row\"><img src=\"${backboard.picture.url}\" alt=\"${backboard.name}\" class=\"img-reponsive img-rounded backboard-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${backboard.name}</h4><p class=\"list-group-item-text\" title=\"${backboard.description}\">${backboard.description}</p></div></div></a><style>.backboard-selector-row{background:#0ff}.backboard-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
+define('text!product/backboard/canvas/backboard-selector.html', ['module'], function(module) { module.exports = "<template><a href=\"#\" class=\"list-group-item\" repeat.for=\"backboard of backboards\"><div class=\"row\" click.delegate=\"select(backboard)\"><div class=\"col-md-6 vcenter backboard-selector-row\"><img src=\"${backboard.picture.url}\" alt=\"${backboard.name}\" class=\"img-reponsive img-rounded backboard-selector-thumbnail vcenter\"></div><div class=\"col-md-6 vcenter\"><h4 class=\"list-group-item-heading\">${backboard.name}</h4><p class=\"list-group-item-text\" title=\"${backboard.description}\">${backboard.description}</p></div></div></a><style>.backboard-selector-row{background:#0ff}.backboard-selector-thumbnail{max-height:100%;max-width:100%;width:auto;height:auto;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;background:#00f}</style></template>"; });
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -578,16 +552,10 @@ define('nav-bar/nav-bar',["require", "exports", "aurelia-framework", "../api/use
         function NavBar(userService, authService) {
             this.userService = userService;
             this.authService = authService;
+            console.log('constructed');
         }
         NavBar.prototype.created = function () {
-            if (this.isAuthenticated()) {
-                this.authenticated = true;
-                this.getCurrentUser();
-            }
-            else {
-                this.authenticated = false;
-                this.user = null;
-            }
+            console.log('created');
         };
         NavBar.prototype.login = function () {
             this.authService.login();
@@ -619,7 +587,7 @@ define('nav-bar/nav-bar',["require", "exports", "aurelia-framework", "../api/use
 
 
 define('text!nav-bar/nav-bar.html', ['module'], function(module) { module.exports = "<template><nav class=\"navbar navbar-expand-lg navbar-light bg-light fixed-top\"><a class=\"navbar-brand\" href=\"#\">WeFrame</a> <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarSupportedContent\" aria-controls=\"navbarSupportedContent\" aria-expanded=\"false\" aria-label=\"Toggle navigation\"><span class=\"navbar-toggler-icon\"></span></button><div class=\"collapse navbar-collapse\" id=\"navbarSupportedContent\"><ul class=\"navbar-nav mr-auto\"><li class=\"nav-item active\"><a class=\"nav-link\" href=\"#\">Inicio <span class=\"sr-only\">(current)</span></a></li></ul><ul class=\"nav navbar-nav navbar-right\" if.bind=\"authenticated\"><li><a href=\"#\">${user.name}</a></li><button class=\"btn btn-outline-warning my-2 my-sm-0\" click.delegate=\"logout()\">Salir</button></ul><ul class=\"nav navbar-nav navbar-right\" if.bind=\"!authenticated\"><button class=\"btn btn-outline-success my-2 my-sm-0\" click.delegate=\"login()\">Ingresar</button></ul></div></nav></template>"; });
-define('main',["require", "exports", "aurelia-http-client", "auth0-js", "./environment", "./api/auth/auth-service", "./api/http/http-service", "./api/user-service", "./product/frame/frame-service"], function (require, exports, aurelia_http_client_1, auth0_js_1, environment_1, auth_service_1, http_service_1, user_service_1, frame_service_1) {
+define('main',["require", "exports", "aurelia-http-client", "auth0-js", "./environment", "./api/auth/auth-service", "./api/http/http-service", "./api/user-service"], function (require, exports, aurelia_http_client_1, auth0_js_1, environment_1, auth_service_1, http_service_1, user_service_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function configure(aurelia) {
@@ -638,14 +606,12 @@ define('main',["require", "exports", "aurelia-http-client", "auth0-js", "./envir
         var httpService = new http_service_1.HttpService(httpClient);
         var authService = new auth_service_1.AuthService(auth0, httpService);
         authService.initialize();
+        var userService = new user_service_1.UserService(httpService);
         aurelia.container.registerSingleton(auth_service_1.AuthService, function () {
             return authService;
         });
         aurelia.container.registerSingleton(user_service_1.UserService, function () {
-            return new user_service_1.UserService(httpService);
-        });
-        aurelia.container.registerSingleton("FrameService", function () {
-            return new frame_service_1.FrameService(httpService);
+            return userService;
         });
         aurelia.start().then(function () { return aurelia.setRoot(); });
     }
@@ -705,8 +671,8 @@ define('environment',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = {
-        debug: true,
-        testing: true,
+        debug: false,
+        testing: false,
         auth0Domain: 'weframe.auth0.com',
         auth0ClientID: 'T4odJUBxMAikG5P6sEaq7wk5OqdabVYL',
         auth0RedirectUri: 'http://localhost:9000/callback',
@@ -751,6 +717,7 @@ define('api/user-service',["require", "exports"], function (require, exports) {
     var UserService = (function () {
         function UserService(httpService) {
             this.httpService = httpService;
+            console.log("constructed user service");
         }
         UserService.prototype.getCurrentUserData = function () {
             var _this = this;
@@ -878,10 +845,6 @@ define('api/http/http-service',["require", "exports", "aurelia-framework", "aure
                 }
             })
                 .withInterceptor({
-                request: function (request) {
-                    console.log(request.method + " " + request.buildFullUrl());
-                    return request;
-                },
                 response: function (response) {
                     console.log(response.requestMessage.method + " " + response.requestMessage.buildFullUrl() + " " + response.statusCode);
                     return response;
@@ -988,6 +951,7 @@ define('api/auth/auth-service',["require", "exports"], function (require, export
         function AuthService(auth0, listener) {
             this.auth0 = auth0;
             this.listener = listener;
+            console.log("constructed auth service");
         }
         AuthService.prototype.login = function () {
             console.log("Loging in.");

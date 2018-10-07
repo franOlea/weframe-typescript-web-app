@@ -1,6 +1,6 @@
 <template>
   <a href="#" class="list-group-item" repeat.for="backboard of backboards">
-    <div class="row">
+    <div class="row" click.delegate="select(backboard)">
       <div class="col-md-6 vcenter backboard-selector-row">
         <img src="${backboard.picture.url}"  alt="${backboard.name}" class="img-reponsive img-rounded backboard-selector-thumbnail vcenter" />
       </div>

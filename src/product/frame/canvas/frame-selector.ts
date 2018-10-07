@@ -20,9 +20,6 @@ export class FrameSelector {
     this.working = true;
     this.service.get(page, size).then(success => {
       this.frames = success.entity;
-      this.frames.forEach((frame) => {
-        console.log(frame);
-      }, this);
       this.working = false;
     }, failure => {
       this.error = new Error('Ups', 'Parece que el sistema no response, por favor intenta nuevamente mas tarde.');

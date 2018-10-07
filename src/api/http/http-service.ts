@@ -25,10 +25,6 @@ export class HttpService implements AuthListener {
         }
       })
       .withInterceptor({
-          request(request) {
-            console.log(`${request.method} ${request.buildFullUrl()}`);
-            return request;
-          },
           response(response) {
             console.log(`${response.requestMessage.method} ${response.requestMessage.buildFullUrl()} ${response.statusCode}`);
             return response;

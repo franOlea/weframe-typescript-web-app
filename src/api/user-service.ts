@@ -2,7 +2,9 @@ import { HttpService } from "./http/http-service";
 
 export class UserService {
 
-    constructor(private readonly httpService: HttpService) {}
+    constructor(private readonly httpService: HttpService) {
+      console.log("constructed user service")
+    }
 
     getCurrentUserData(): Promise<any> {
         return new Promise((resolve, reject) => {
